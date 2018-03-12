@@ -61,12 +61,12 @@ pub fn parse(code: &str) -> ast::Module {
     let re = Regex::new(r"(?m)//.*").unwrap();
     let code = re.replace_all(&code, "");
 
-    codelist(&code);
+    //codelist(&code);
 
     let re = Regex::new(r"(?s)module \w+(.*?)\);").unwrap();
     let code = re.find(&code).unwrap().as_str();
 
-    codelist(&code);
+    //codelist(&code);
 
     parse_results(&code, verilog_parser::parse_Module(&code))
 }

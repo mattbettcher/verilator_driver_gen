@@ -5,3 +5,4 @@ authors = ["Matt Bettcher <mattbettcher@gmail.com>"]
 
 [dependencies]
 verilog = { path = "./verilog" }
+clap = "2.31.1"
