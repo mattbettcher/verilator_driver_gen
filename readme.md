@@ -10,7 +10,8 @@ Current limitations -
 
 Todo -
 
-- [ ] Command line interface
+- [x] Command line interface
+- [x] Add different output directories for each file type
 - [x] Automatically extract 'module port' definition from SystemVerilog file
 - [x] Parse 'module port' definitions
 - [x] Output a generic driver in CPP
