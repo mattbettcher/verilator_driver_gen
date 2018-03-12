@@ -11,7 +11,7 @@ Current limitations -
 Todo -
 
 - [ ] Command line interface
-- [ ] Automatically extract 'module port' definition from SystemVerilog file
+- [x] Automatically extract 'module port' definition from SystemVerilog file
 - [x] Parse 'module port' definitions
 - [x] Output a generic driver in CPP
 - [x] Output a generic driver in Rust
