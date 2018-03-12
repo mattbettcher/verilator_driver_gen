@@ -19,6 +19,7 @@ Todo -
 
 Stretch Goals -
 
+- [ ] Add an option to create a new cargo lib including the the Rust driver file
 - [ ] Allow custom enum based ports somehow 
 - [ ] Tuples everywhere are very cryptic. Fix this!
 
@@ -28,6 +29,7 @@ Bugs -
 
 ---
 
+- [x] wrong class name!
 - [x] bit size in cpp gen.
 - [x] bit size in rust gen.
 

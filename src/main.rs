@@ -148,10 +148,9 @@ int main(int argc, char **argv)
     {
         cout << \"Failed to get run proc address\" << endl;
         exit(1);
-    }
-
-    top = new Vsdram();
-
+    }\n\n");
+    file.write_fmt(format_args!("\ttop = new V{}();\n", (code.0).0));
+    file.write_all(b"
     if (argc == 3)
     {
         Verilated::traceEverOn(true);
