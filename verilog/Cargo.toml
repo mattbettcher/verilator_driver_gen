@@ -1,0 +1,13 @@
+[package]
+name = "verilog"
+version = "0.1.0"
+authors = ["Matt Bettcher <mattbettcher@gmail.com>"]
+build = "build.rs" # LALRPOP preprocessing
+
+[build-dependencies]
+libflate = "0.1"
+lalrpop = "0.14.0"
+
+[dependencies]
+lalrpop-util = "0.14"
+regex = "0.2.0"

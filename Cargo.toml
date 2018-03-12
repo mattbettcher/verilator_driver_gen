@@ -1,0 +1,7 @@
+[package]
+name = "verilator_driver_gen"
+version = "0.1.0"
+authors = ["Matt Bettcher <mattbettcher@gmail.com>"]
+
+[dependencies]
+verilog = { path = "./verilog" }

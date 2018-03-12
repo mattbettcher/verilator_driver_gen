@@ -1,0 +1,108 @@
+use std::str::FromStr;
+use ast;
+
+#[LALR] grammar;
+
+Comma<T>: Vec<T> = {
+    <v:(<T> ",")*> <e:T?> => match e {
+        None => v,
+        Some(e) => {
+            let mut v = v;
+            v.push(e);
+            v
+        }
+    }
+};
+
+Semicolon<T>: Vec<T> = {
+    <v:(<T> ";")*> <e:T?> => match e {
+        None => v,
+        Some(e) => {
+            let mut v = v;
+            v.push(e);
+            v
+        }
+    }
+};
+
+pub Module: ast::Module = {
+    // TODO - need to support parameters ie. #(parameter width = 32, depth = 4)
+    "module" <i:Ident> "(" <a:ModuleArgs> ")" ";" => { ast::Module(i, None, a) },
+    "module" <i:Ident> "#" "(" "parameter" <p:ParamArgs> ")" "(" <a:ModuleArgs> ")" ";" => { ast::Module(i, Some(p), a) },
+};
+
+// Param args are comma separated
+ParamArgs = Comma<ParamArg>;
+
+// 
+ParamArg: ast::ParamArg = {
+    <i:Ident> "=" <n:Num> => (i, n),
+};
+
+// module args are comma separated
+ModuleArgs = Comma<ModuleArg>;
+
+// 
+ModuleArg: ast::Arg = {
+    <d:ArgType> <t:DataType?> <b:BitRange?> <i:Ident> => (i, d, b, t),
+};
+
+// parse bit ranges
+BitRange: ast::BitRange = {
+    "[" <Num> ":" <Num> "]"
+};
+
+ArgType: ast::Dir = {
+    "output" => ast::Dir::Output,
+    "input" => ast::Dir::Input,
+    "inout" => ast::Dir::InOut,
+};
+
+DataType: ast::DataType = {
+    "reg" => ast::DataType::Reg,
+    "integer" => ast::DataType::Integer,
+    "bit" => ast::DataType::Bit,
+    "logic" => ast::DataType::Logic,
+    "byte" => ast::DataType::Byte,
+    "int" => ast::DataType::Int,
+    "shortint" => ast::DataType::ShortInt,
+    "longint" => ast::DataType::LongInt,
+};
+
+Ident: ast::Ident = {
+    r"[a-zA-Z_][0-9A-Za-z_]*" => ast::Ident(<>.to_string()),
+};
+
+Num: ast::Num = {
+    r"\d+" => {
+        let num = <>.to_string().replace("_", "");
+        ast::Num(i32::from_str(<>).unwrap())
+    },
+    r"[0-9]+'d[0-9_]+" => {
+        let num = <>.to_string().replace("_", "").splitn(2, 'd').nth(1).unwrap().to_string();
+        ast::Num(i32::from_str_radix(&num, 10).unwrap())
+    },
+    r"[0-9]+'b[01_]+" => {
+        let num = <>.to_string().replace("_", "").splitn(2, 'b').nth(1).unwrap().to_string();
+        ast::Num(i32::from_str_radix(&num, 2).unwrap())
+    },
+    r"[0-9]+'x[0-9a-fA-F_]+" => {
+        let num = <>.to_string().replace("_", "").splitn(2, 'x').nth(1).unwrap().to_string();
+        ast::Num(i32::from_str_radix(&num, 16).unwrap())
+    },
+};
+
+//Literal: ast::Expr = {
+//    Ident => ast::Expr::Ref(<>),
+//    Num => <>,
+//};
+//
+//Term: ast::Expr = {
+//    "!" <r:Term> => ast::Expr::Unary(ast::UnaryOp::Not, Box::new(r)),
+//    "(" <e:Expr> ")" => e,
+//    "{" <v:Expr> ";" <r:Expr> "}" => ast::Expr::Repeat(Box::new(v), Box::new(r)),
+//    "{" <v:Comma<Expr>> "}" => ast::Expr::Concat(v),
+//    <i:Ident> "[" <l:Expr> ":" <r:Expr> "]" => ast::Expr::Slice(i, Box::new(l), Some(Box::new(r))),
+//    <i:Ident> "[" <l:Expr> "]" => ast::Expr::Slice(i, Box::new(l), None),
+//    Literal => <>,
+//};
