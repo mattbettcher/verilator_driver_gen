@@ -5,6 +5,7 @@ extern crate clap;
 use clap::{Arg, App};
 
 use std::fs::File;
+use std::path::Path;
 use std::io::prelude::*;
 
 fn main() {
@@ -17,17 +18,25 @@ fn main() {
                 .required(true)
                 .index(1)
                 .help("Input file"))
+            .arg(Arg::with_name("output directory")
+                .index(2)
+                .help("Output directory if different from input directory"))
             .get_matches();
 
     let mut buffer = String::new();
-    if let Some(filename) = matches.value_of("input") {
-        if let Ok(mut file) = File::open(filename) {
+    if let Some(path_str) = matches.value_of("input") {
+        let path_with_filename = Path::new(path_str);
+        let mut path = path_with_filename.parent().unwrap_or(Path::new(""));
+        if matches.is_present("output directory") {
+            path = Path::new(matches.value_of("output directory").unwrap());
+        }
+        if let Ok(mut file) = File::open(path_with_filename) {
             file.read_to_string(&mut buffer);
             let code: verilog::ast::Module = verilog::parse(&buffer.as_str());
     
 
   // write driver.cpp file
-  let mut file = File::create(format!("{}_driver.cpp", (code.0).0)).unwrap();
+  let mut file = File::create(format!("{}/{}_driver.cpp", path.display(), (code.0).0)).unwrap();
   file.write_fmt(format_args!("#include \"../obj_dir/V{}.h\"\n", (code.0).0));
   file.write_all(b"#include \"verilated_vcd_c.h\"
 
@@ -165,10 +174,10 @@ int main(int argc, char **argv)
     return ret;
 }
 ");
-    println!("Generated: {}_driver.cpp", (code.0).0);
+    println!("Generated: {}/{}_driver.cpp", path.display(), (code.0).0);
 
   // write rust driver file
-  let mut file = File::create(format!("{}_driver.rs", (code.0).0)).unwrap();
+  let mut file = File::create(format!("{}/{}_driver.rs", path.display(), (code.0).0)).unwrap();
   file.write_all(b"#![allow(dead_code)]
 
 #[repr(C)]
@@ -249,9 +258,9 @@ impl {} {{
     }
 }");
 
-    println!("Generated: {}_driver.rs", (code.0).0);
+    println!("Generated: {}/{}_driver.rs", path.display(), (code.0).0);
         } else {
-            println!("File not found: {}", filename);
+            println!("File not found: {}", path_with_filename.display());
         }
     }
 }
