@@ -210,15 +210,16 @@ pub struct Env {
     trace_dump: extern \"C\" fn(time: u64),
 }\n\n");
 
-  file.write_fmt(format_args!("pub struct {} {{
+    let name = uppercase_first_letter(&(code.0).0);
+  file.write_fmt(format_args!("pub struct {}Driver {{
     env: *const Env,
 }}\n
-impl {} {{
-  pub fn new(env: *const Env) -> {} {{
+impl {}Driver {{
+  pub fn new(env: *const Env) -> {}Driver {{
         {} {{
             env: env,
         }}
-    }}\n\n", (code.0).0, (code.0).0, (code.0).0, (code.0).0));
+    }}\n\n", name, name, name, name));
 
   for port in &code.2 {
     let mut bit_size = 32;
@@ -272,5 +273,13 @@ impl {} {{
         } else {
             println!("File not found: {}", path_with_filename.display());
         }
+    }
+}
+
+fn uppercase_first_letter(s: &str) -> String {
+    let mut c = s.chars();
+    match c.next() {
+        None => String::new(),
+        Some(f) => f.to_uppercase().chain(c).collect(),
     }
 }

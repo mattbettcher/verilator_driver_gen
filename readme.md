@@ -29,6 +29,8 @@ Bugs -
 
 ---
 
+- [ ] Should warn before overwrite? Maybe make a .bak file?
+- [x] Rust struct names should be capitalized
 - [x] wrong class name!
 - [x] bit size in cpp gen.
 - [x] bit size in rust gen.
