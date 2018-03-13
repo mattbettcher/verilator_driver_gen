@@ -7,6 +7,7 @@ use clap::{Arg, App};
 use std::fs::File;
 use std::path::Path;
 use std::io::prelude::*;
+use std::process::*;
 
 fn main() {
 
@@ -18,28 +19,41 @@ fn main() {
                 .required(true)
                 .index(1)
                 .help("Input file"))
-            .arg(Arg::with_name("cpp")
+            .arg(Arg::with_name("path for cpp file")
                 .short("c")
                 .long("cpp")
                 .takes_value(true)
                 .help("Output directory, if different from input directory, for the CPP file"))
-            .arg(Arg::with_name("rs")
+            .arg(Arg::with_name("path for rust file")
                 .short("r")
                 .long("rs")
                 .takes_value(true)
                 .help("Output directory, if different from input directory, for the Rust file"))
+            .arg(Arg::with_name("lib name")
+                .short("n")
+                .long("new")
+                .takes_value(true)
+                .conflicts_with("path for cpp file")
+                .conflicts_with("path for rust file")
+                .help("Use this to create a Cargo library project"))
             .get_matches();
+
+    if matches.is_present("lib name") {
+        Command::new(format!("cargo"))
+            .args(&["new", matches.value_of("lib name").unwrap()])
+            .spawn();
+    }
 
     let mut buffer = String::new();
     if let Some(path_str) = matches.value_of("input") {
         let path_with_filename = Path::new(path_str);
         let mut cpp_path = path_with_filename.parent().unwrap_or(Path::new(""));
         let mut rs_path = path_with_filename.parent().unwrap_or(Path::new(""));
-        if matches.is_present("cpp") {
-            cpp_path = Path::new(matches.value_of("cpp").unwrap());
+        if matches.is_present("path for cpp file") {
+            cpp_path = Path::new(matches.value_of("path for cpp file").unwrap());
         }
-        if matches.is_present("rs") {
-            rs_path = Path::new(matches.value_of("rs").unwrap());
+        if matches.is_present("path for rust file") {
+            rs_path = Path::new(matches.value_of("path for rust file").unwrap());
         }
         if let Ok(mut file) = File::open(path_with_filename) {
             file.read_to_string(&mut buffer);

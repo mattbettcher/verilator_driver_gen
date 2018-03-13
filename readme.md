@@ -35,6 +35,8 @@ Bugs -
 - [x] bit size in cpp gen.
 - [x] bit size in rust gen.
 
+---
+
 This is public domain.
 
 For more Verilog & Rust see [rust-verilog](https://github.com/tcr/rust-verilog) which this project is partially based on (I also use [lalrpop](https://github.com/lalrpop/lalrpop), but I only parse a small portion of SystemVerilog)
